@@ -1,6 +1,7 @@
 """A shared calculation contract and its concrete implementations."""
 
 from abc import ABC, abstractmethod
+from calculator.operations import Operations
 
 
 class Calculation(ABC):
@@ -19,11 +20,11 @@ class Add(Calculation):
     """Add the two operands."""
 
     def get_result(self) -> float:
-        return self.a + self.b
+        return Operations.add(self.a, self.b)
 
 
 class Subtract(Calculation):
     """Subtract the second operand from the first."""
 
     def get_result(self) -> float:
-        return self.a - self.b
+        return Operations.subtract(self.a, self.b)
