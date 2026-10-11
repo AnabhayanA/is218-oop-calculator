@@ -331,3 +331,15 @@ def test_failed_removals_then_successful_removal(monkeypatch, capsys):
     assert "Removed: Add: 9, 6 = 15" in output
     assert "No calculations in history." in output
     assert output.endswith("Goodbye!\n")
+
+def test_cli_rejects_infinite_result(monkeypatch, capsys):
+    inputs = iter(["subtract", "1e308", "-1e308", "exit"])
+
+    monkeypatch.setattr("builtins.input", lambda prompt="": next(inputs))
+
+    run()
+
+    output = capsys.readouterr().out
+
+    assert "Invalid number or result" in output
+    assert "Result: inf" not in output

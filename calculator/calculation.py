@@ -1,5 +1,5 @@
 """A shared calculation contract and its concrete implementations."""
-
+from calculator.composed_calculation import ComposedCalculation
 from abc import ABC, abstractmethod
 from calculator.operations import Operations
 
@@ -17,10 +17,15 @@ class Calculation(ABC):
 
 
 class Add(Calculation):
-    """Add the two operands."""
+    """Add the two operands using composition."""
 
     def get_result(self) -> float:
-        return Operations.add(self.a, self.b)
+        calculation = ComposedCalculation(
+            self.a,
+            self.b,
+            Operations.add
+        )
+        return calculation.get_result()
 
 
 class Subtract(Calculation):
