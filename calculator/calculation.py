@@ -29,7 +29,12 @@ class Add(Calculation):
 
 
 class Subtract(Calculation):
-    """Subtract the second operand from the first."""
+    """Subtract the two operands using composition."""
 
     def get_result(self) -> float:
-        return Operations.subtract(self.a, self.b)
+        calculation = ComposedCalculation(
+            self.a,
+            self.b,
+            Operations.subtract
+        )
+        return calculation.get_result()

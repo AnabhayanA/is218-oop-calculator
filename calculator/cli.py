@@ -1,3 +1,4 @@
+
 """Read, evaluate, print, and loop until the user exits."""
 
 from math import isfinite
@@ -70,11 +71,6 @@ def run() -> None:
                     calculation = operation_class(a, b)
 
                     result = calculation.get_result()
-
-                    if not isfinite(result):
-                        raise ValueError(
-                            "Result is outside the supported range."
-                        )
 
                 except ValueError:
                     print(
