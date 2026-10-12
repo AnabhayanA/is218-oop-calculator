@@ -14,9 +14,9 @@ class CalculationFactory:
 
     @classmethod
     def create(
-        cls, operation: str, a: float, b: float
+        cls, operation: str, *values: float, **options
     ) -> Calculation:
-        """Create a calculation for the requested operation."""
+        """Create a calculation using flexible arguments."""
         if not isinstance(operation, str):
             raise ValueError("Operation must be a string.")
 
@@ -25,4 +25,4 @@ class CalculationFactory:
         if name not in cls._operations:
             raise ValueError(f"Unknown operation: {operation}")
 
-        return cls._operations[name](a, b)
+        return cls._operations[name](*values, **options)
