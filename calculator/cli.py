@@ -1,19 +1,27 @@
 
-"""Read, evaluate, print, and loop until the user exits."""
+"""Interactive calculator with arithmetic, statistics, and CSV."""
 
 from math import isfinite
 
 from calculator.commands import CalculateCommand
+from calculator.csv_reader import read_csv_numbers
 from calculator.history import History
+from calculator.statistics import Statistics
+from calculator.validation import numeric_values
 
 
 HELP = """Commands:
-  add       Add two numbers
-  subtract  Subtract the second number from the first
-  history   Show this session's calculations
-  remove    Remove a calculation by its displayed number
-  help      Show available commands
-  exit      Exit the calculator"""
+  add         Add two numbers
+  subtract    Subtract the second number from the first
+  sum         Sum multiple numbers
+  mean        Calculate the mean
+  stddev      Calculate sample standard deviation
+  csv mean    Calculate mean from a CSV column
+  csv stddev  Calculate standard deviation from a CSV column
+  history     Show this session's calculations
+  remove      Remove a calculation by its displayed number
+  help        Show available commands
+  exit        Exit the calculator"""
 
 
 def show_history(history: History) -> None:
@@ -37,7 +45,7 @@ def show_history(history: History) -> None:
 
 
 def read_number(prompt: str) -> float:
-    """Convert terminal text into a finite floating-point number."""
+    """Convert terminal input into a finite number."""
     number = float(input(prompt))
 
     if not isfinite(number):
@@ -46,10 +54,25 @@ def read_number(prompt: str) -> float:
     return number
 
 
+def read_values() -> tuple[float, ...]:
+    """Read comma-separated numeric values."""
+    raw = input("Enter numbers separated by commas: ")
+    return numeric_values(raw.split(","))
+
+
 def run() -> None:
     """Run one independent calculator session."""
     history = History()
     operations = {"add", "subtract"}
+    statistics_commands = {
+        "sum": Statistics.total,
+        "mean": Statistics.mean,
+        "stddev": Statistics.stddev,
+    }
+    csv_commands = {
+        "csv mean": Statistics.mean,
+        "csv stddev": Statistics.stddev,
+    }
 
     print('OOP Calculator\n\nType "help" for commands.')
 
@@ -73,6 +96,28 @@ def run() -> None:
                         "Invalid number or result. "
                         "Please use finite numbers."
                     )
+                    continue
+
+                print(f"Result: {result:g}")
+
+            elif command in statistics_commands:
+                try:
+                    values = read_values()
+                    result = statistics_commands[command](*values)
+                except ValueError as error:
+                    print(f"Error: {error}")
+                    continue
+
+                print(f"Result: {result:g}")
+
+            elif command in csv_commands:
+                try:
+                    path = input("CSV file path: ").strip()
+                    column = input("Column name: ").strip()
+                    values = read_csv_numbers(path, column)
+                    result = csv_commands[command](*values)
+                except ValueError as error:
+                    print(f"Error: {error}")
                     continue
 
                 print(f"Result: {result:g}")
