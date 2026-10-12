@@ -111,3 +111,59 @@ def test_remove_last_entry_keeps_previous_order():
 
     assert history.remove(2) is last
     assert history.get_history() == [first, middle]
+
+def test_history_stores_and_removes_results():
+    history = History()
+
+    history.add(Add(2, 3))
+    history.add(Subtract(10, 4))
+
+    assert history.get_results() == [5.0, 6.0]
+
+    history.remove(0)
+
+    assert history.get_results() == [6.0]
+
+def test_history_calculates_only_once():
+    class CountingAdd(Add):
+        def __init__(self, a, b):
+            super().__init__(a, b)
+            self.calls = 0
+
+        def get_result(self):
+            self.calls += 1
+            return super().get_result()
+
+    history = History()
+    calculation = CountingAdd(2, 3)
+
+    history.add(calculation)
+
+    assert calculation.calls == 1
+    assert history.get_results() == [5.0]
+    assert calculation.calls == 1
+
+    history.get_history()
+    history.get_results()
+
+    assert calculation.calls == 1
+def test_history_uses_provided_result_without_recalculating():
+    class CountingAdd(Add):
+        def __init__(self, a, b):
+            super().__init__(a, b)
+            self.calls = 0
+
+        def get_result(self):
+            self.calls += 1
+            return super().get_result()
+
+    history = History()
+    calculation = CountingAdd(2, 3)
+
+    result = calculation.get_result()
+    assert calculation.calls == 1
+
+    history.add(calculation, result)
+
+    assert calculation.calls == 1
+    assert history.get_results() == [5.0]

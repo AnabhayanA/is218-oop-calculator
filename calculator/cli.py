@@ -3,7 +3,7 @@
 
 from math import isfinite
 
-from calculator.calculation import Add, Calculation, Subtract
+from calculator.calculation import Add,Subtract
 from calculator.history import History
 
 
@@ -16,17 +16,12 @@ HELP = """Commands:
   exit      Exit the calculator"""
 
 
-def describe(calculation: Calculation) -> str:
-    """Format any calculation through its common interface."""
-    return (
-        f"{type(calculation).__name__}: "
-        f"{calculation.a:g}, {calculation.b:g} = {calculation.get_result():g}"
-    )
 
 
 def show_history(history: History) -> None:
-    """Display a snapshot without changing the collection."""
+    """Display saved calculations without recalculating results."""
     calculations = history.get_history()
+    results = history.get_results()
 
     if not calculations:
         print("No calculations in history.")
@@ -34,8 +29,13 @@ def show_history(history: History) -> None:
 
     print("Calculation History\n")
 
-    for number, calculation in enumerate(calculations, start=1):
-        print(f"{number}. {describe(calculation)}")
+    for number, (calculation, result) in enumerate(
+        zip(calculations, results), start=1
+    ):
+        print(
+            f"{number}. {type(calculation).__name__}: "
+            f"{calculation.a:g}, {calculation.b:g} = {result:g}"
+        )
 
 
 def read_number(prompt: str) -> float:
@@ -79,8 +79,7 @@ def run() -> None:
                     )
                     continue
 
-                history.add(calculation)
-
+                history.add(calculation,result)
                 print(f"Result: {result:g}")
 
             elif command == "history":
@@ -94,23 +93,26 @@ def run() -> None:
 
                 try:
                     number = int(
-                        input(
-                            "Enter calculation number to remove: "
-                        )
+                        input("Enter calculation number to remove: ")
                     )
 
+                    if number < 1:
+                        raise IndexError("History index out of range")
+
+                    saved_result = history.get_results()[number - 1]
                     removed = history.remove(number - 1)
 
                 except ValueError:
-                    print(
-                        "Please enter a whole calculation number."
-                    )
+                    print("Please enter a whole calculation number.")
 
                 except IndexError:
                     print("Calculation does not exist.")
 
                 else:
-                    print(f"Removed: {describe(removed)}")
+                    print(
+                        f"Removed: {type(removed).__name__}: "
+                        f"{removed.a:g}, {removed.b:g} = {saved_result:g}"
+                    )
 
             elif command == "help":
                 print(HELP)
