@@ -3,7 +3,7 @@
 
 from math import isfinite
 
-from calculator.calculation import Add,Subtract
+from calculator.factory import CalculationFactory
 from calculator.history import History
 
 
@@ -14,8 +14,6 @@ HELP = """Commands:
   remove    Remove a calculation by its displayed number
   help      Show available commands
   exit      Exit the calculator"""
-
-
 
 
 def show_history(history: History) -> None:
@@ -51,7 +49,7 @@ def read_number(prompt: str) -> float:
 def run() -> None:
     """Run one independent calculator session."""
     history = History()
-    operations = {"add": Add, "subtract": Subtract}
+    operations = {"add", "subtract"}
 
     print('OOP Calculator\n\nType "help" for commands.')
 
@@ -67,9 +65,9 @@ def run() -> None:
                     a = read_number("First number: ")
                     b = read_number("Second number: ")
 
-                    operation_class = operations[command]
-                    calculation = operation_class(a, b)
-
+                    calculation = CalculationFactory.create(
+                        command, a, b
+                    )
                     result = calculation.get_result()
 
                 except ValueError:
@@ -79,7 +77,7 @@ def run() -> None:
                     )
                     continue
 
-                history.add(calculation,result)
+                history.add(calculation, result)
                 print(f"Result: {result:g}")
 
             elif command == "history":
