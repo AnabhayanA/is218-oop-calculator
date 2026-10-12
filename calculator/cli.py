@@ -3,7 +3,7 @@
 
 from math import isfinite
 
-from calculator.factory import CalculationFactory
+from calculator.commands import CalculateCommand
 from calculator.history import History
 
 
@@ -65,10 +65,8 @@ def run() -> None:
                     a = read_number("First number: ")
                     b = read_number("Second number: ")
 
-                    calculation = CalculationFactory.create(
-                        command, a, b
-                    )
-                    result = calculation.get_result()
+                    action = CalculateCommand(command, a, b)
+                    result = action.execute(history)
 
                 except ValueError:
                     print(
@@ -77,7 +75,6 @@ def run() -> None:
                     )
                     continue
 
-                history.add(calculation, result)
                 print(f"Result: {result:g}")
 
             elif command == "history":
