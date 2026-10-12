@@ -1,3 +1,4 @@
+
 import pytest
 
 from calculator.operations import Operations
@@ -22,3 +23,15 @@ def test_divide():
 def test_divide_by_zero():
     with pytest.raises(ZeroDivisionError):
         Operations.divide(10, 0)
+
+
+def test_absolute_difference_positive():
+    assert Operations.absolute_difference(10, 4) == 6
+
+
+def test_absolute_difference_reverse():
+    assert Operations.absolute_difference(4, 10) == 6
+
+
+def test_absolute_difference_negative():
+    assert Operations.absolute_difference(-3, 5) == 8

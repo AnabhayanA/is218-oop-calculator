@@ -18,3 +18,8 @@ class Operations:
     @staticmethod
     def divide(a: float, b: float) -> float:
         return a / b
+
+    @staticmethod
+    def absolute_difference(a: float, b: float) -> float:
+        """Return the positive difference between two numbers."""
+        return abs(a - b)
