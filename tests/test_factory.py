@@ -1,0 +1,51 @@
+
+"""Tests for the calculation factory."""
+
+import pytest
+
+from calculator.calculation import Add, Divide, Multiply, Subtract
+from calculator.factory import CalculationFactory
+
+
+def test_factory_creates_add():
+    calculation = CalculationFactory.create("add", 10, 5)
+
+    assert isinstance(calculation, Add)
+    assert calculation.get_result() == 15
+
+
+def test_factory_creates_subtract():
+    calculation = CalculationFactory.create("subtract", 10, 5)
+
+    assert isinstance(calculation, Subtract)
+    assert calculation.get_result() == 5
+
+
+def test_factory_creates_multiply():
+    calculation = CalculationFactory.create("multiply", 6, 7)
+
+    assert isinstance(calculation, Multiply)
+    assert calculation.get_result() == 42
+
+
+def test_factory_creates_divide():
+    calculation = CalculationFactory.create("divide", 10, 2)
+
+    assert isinstance(calculation, Divide)
+    assert calculation.get_result() == 5
+
+
+def test_factory_is_case_insensitive():
+    calculation = CalculationFactory.create(" ADD ", 2, 3)
+
+    assert calculation.get_result() == 5
+
+
+def test_factory_rejects_unknown_operation():
+    with pytest.raises(ValueError, match="Unknown operation"):
+        CalculationFactory.create("unsupported", 2, 3)
+
+
+def test_factory_rejects_non_string_operation():
+    with pytest.raises(ValueError, match="Operation must be a string"):
+        CalculationFactory.create(None, 2, 3)
