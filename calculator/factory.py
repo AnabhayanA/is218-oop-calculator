@@ -1,28 +1,29 @@
 
-"""Factory for creating calculator operations."""
+"""Factory for creating calculation objects."""
 
-from calculator.calculation import Add, Calculation, Subtract
+from calculator.calculation import Add, Divide, Multiply, Subtract
 
 
 class CalculationFactory:
     """Create calculation objects from operation names."""
 
-    _operations = {
-        "add": Add,
-        "subtract": Subtract,
-    }
+    @staticmethod
+    def create(operation: str, *values: float, **options):
+        """Create a calculation while validating its operation name."""
 
-    @classmethod
-    def create(
-        cls, operation: str, *values: float, **options
-    ) -> Calculation:
-        """Create a calculation using flexible arguments."""
         if not isinstance(operation, str):
             raise ValueError("Operation must be a string.")
 
-        name = operation.strip().lower()
+        operation = operation.strip().lower()
 
-        if name not in cls._operations:
+        operations = {
+            "add": Add,
+            "subtract": Subtract,
+            "multiply": Multiply,
+            "divide": Divide,
+        }
+
+        if operation not in operations:
             raise ValueError(f"Unknown operation: {operation}")
 
-        return cls._operations[name](*values, **options)
+        return operations[operation](*values, **options)

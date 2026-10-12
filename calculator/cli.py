@@ -13,6 +13,8 @@ from calculator.validation import numeric_values
 HELP = """Commands:
   add         Add two numbers
   subtract    Subtract the second number from the first
+  multiply    Multiply two numbers
+  divide      Divide the first number by the second
   sum         Sum multiple numbers
   mean        Calculate the mean
   stddev      Calculate sample standard deviation
@@ -63,12 +65,14 @@ def read_values() -> tuple[float, ...]:
 def run() -> None:
     """Run one independent calculator session."""
     history = History()
-    operations = {"add", "subtract"}
+    operations = {"add", "subtract", "multiply", "divide"}
+
     statistics_commands = {
         "sum": Statistics.total,
         "mean": Statistics.mean,
         "stddev": Statistics.stddev,
     }
+
     csv_commands = {
         "csv mean": Statistics.mean,
         "csv stddev": Statistics.stddev,
@@ -91,10 +95,10 @@ def run() -> None:
                     action = CalculateCommand(command, a, b)
                     result = action.execute(history)
 
-                except ValueError:
+                except (ValueError, ZeroDivisionError):
                     print(
                         "Invalid number or result. "
-                        "Please use finite numbers."
+                        "Please use finite numbers and avoid division by zero."
                     )
                     continue
 
@@ -104,6 +108,7 @@ def run() -> None:
                 try:
                     values = read_values()
                     result = statistics_commands[command](*values)
+
                 except ValueError as error:
                     print(f"Error: {error}")
                     continue
@@ -114,8 +119,10 @@ def run() -> None:
                 try:
                     path = input("CSV file path: ").strip()
                     column = input("Column name: ").strip()
+
                     values = read_csv_numbers(path, column)
                     result = csv_commands[command](*values)
+
                 except ValueError as error:
                     print(f"Error: {error}")
                     continue
